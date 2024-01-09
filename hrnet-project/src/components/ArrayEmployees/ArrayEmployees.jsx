@@ -1,8 +1,41 @@
+import React, { useState } from "react";
 import s from "./style.module.css";
 
 export function ArrayEmployees() {
   const listEmployees = localStorage.getItem("employeeData");
-  const employeeData = listEmployees ? JSON.parse(listEmployees) : [];
+  const [employeeData, setEmployeeData] = useState(
+    listEmployees ? JSON.parse(listEmployees) : []
+  );
+
+  const [sortingField, setSortingField] = useState(null);
+  const [sortingOrder, setSortingOrder] = useState("asc");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+
+  const handleSorting = (field) => {
+    if (field === sortingField) {
+      setSortingOrder(sortingOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortingField(field);
+      setSortingOrder("asc");
+    }
+
+    const sortedEmployees = [...employeeData].sort((a, b) => {
+      if (field === "birthday" || field === "startDate") {
+        const dateA = a[field] ? new Date(a[field].date) : new Date(0);
+        const dateB = b[field] ? new Date(b[field].date) : new Date(0);
+        return sortingOrder === "asc" ? dateA - dateB : dateB - dateA;
+      }
+      // Pour les champs de type string
+      else {
+        const valueA = a[field] || "";
+        const valueB = b[field] || "";
+        return sortingOrder === "asc"
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      }
+    });
+    setEmployeeData(sortedEmployees);
+  };
 
   return (
     <>
@@ -18,12 +51,72 @@ export function ArrayEmployees() {
             <table className={s.table}>
               <thead>
                 <tr>
-                  <th className={s.tableHeader}>First Name</th>
-                  <th className={s.tableHeader}>Last Name</th>
-                  <th className={s.tableHeader}>Birthday</th>
-                  <th className={s.tableHeader}>Start Date</th>
+                  <th className={s.tableHeader}>
+                    First Name
+                    <span
+                      className={s.sort}
+                      onClick={() => handleSorting("firstName")}
+                    >
+                      {sortingField === "firstName"
+                        ? sortingOrder === "asc"
+                          ? "v"
+                          : "^"
+                        : "^"}
+                    </span>
+                  </th>
+                  <th className={s.tableHeader}>
+                    Last Name
+                    <span
+                      className={s.sort}
+                      onClick={() => handleSorting("lastName")}
+                    >
+                      {sortingField === "lastName"
+                        ? sortingOrder === "asc"
+                          ? "v"
+                          : "^"
+                        : "^"}
+                    </span>
+                  </th>
+                  <th className={s.tableHeader}>
+                    Birthday
+                    <span
+                      className={s.sort}
+                      onClick={() => handleSorting("birthday")}
+                    >
+                      {sortingField === "birthday"
+                        ? sortingOrder === "asc"
+                          ? "v"
+                          : "^"
+                        : "^"}
+                    </span>
+                  </th>
+                  <th className={s.tableHeader}>
+                    Start Date
+                    <span
+                      className={s.sort}
+                      onClick={() => handleSorting("startDate")}
+                    >
+                      {sortingField === "startDate"
+                        ? sortingOrder === "asc"
+                          ? "v"
+                          : "^"
+                        : "^"}
+                    </span>
+                  </th>
                   <th className={s.tableHeader}>Address</th>
-                  <th className={s.tableHeader}>Department</th>
+                  <th className={s.tableHeader}>
+                    Department
+                    <span
+                      className={s.sort}
+                      onClick={() => handleSorting("department")}
+                    >
+                      {sortingField === "department"
+                        ? sortingOrder === "asc"
+                          ? "v"
+                          : "^"
+                        : "^"}
+                    </span>
+                  </th>
                 </tr>
               </thead>
               <tbody>

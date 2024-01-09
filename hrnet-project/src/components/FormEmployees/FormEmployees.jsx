@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateAllFields } from "../../store/reducers/formReducer";
-import moment from "moment";
 import DateTimePicker from "react-dl-datetimepicker";
 import { FORMAT_DATE } from "react-dl-datetimepicker/dist/Constants";
 import s from "./style.module.css";
@@ -9,7 +8,9 @@ import { useNavigate } from "react-router-dom";
 
 export const FormEmployees = () => {
   const dispatch = useDispatch();
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [errors, setErrors] = useState({});
   const [employeeData, setEmployeeData] = useState({
     firstName: "",
     lastName: "",
@@ -62,18 +63,59 @@ export const FormEmployees = () => {
     });
   };
 
+  const validateFields = () => {
+    let errors = {};
+    if (!employeeData.firstName.trim())
+      errors.firstName = "First name is required";
+    if (!employeeData.lastName.trim())
+      errors.lastName = "Last name is required";
+    if (!employeeData.startDate) errors.startDate = "Start date is required";
+    if (!employeeData.address.street.trim())
+      errors.street = "Street is required";
+    if (!employeeData.address.city.trim()) errors.city = "City is required";
+    if (!employeeData.address.zip.trim()) errors.zip = "Zip code is required";
+    if (!employeeData.department.trim())
+      errors.department = "Department is required";
+
+    return errors;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateAllFields(employeeData));
+    const newErrors = validateFields();
+    if (Object.keys(newErrors).length === 0) {
+      dispatch(updateAllFields(employeeData));
 
-    const existingEmployees =
-      JSON.parse(localStorage.getItem("employeeData")) || [];
+      const existingEmployees =
+        JSON.parse(localStorage.getItem("employeeData")) || [];
+      existingEmployees.push(employeeData);
+      localStorage.setItem("employeeData", JSON.stringify(existingEmployees));
 
-    existingEmployees.push(employeeData);
+      setShowConfirmation(true);
+    } else {
+      setErrors(newErrors);
+    }
+  };
 
-    localStorage.setItem("employeeData", JSON.stringify(existingEmployees));
-
-    Navigate("/employees");
+  const confirmAndNavigate = () => {
+    setShowConfirmation(false);
+    navigate("/employees");
+  };
+  const confirm = () => {
+    setShowConfirmation(false);
+    setEmployeeData({
+      firstName: "",
+      lastName: "",
+      birthday: "",
+      startDate: "",
+      address: {
+        street: "",
+        city: "",
+        state: "",
+        zip: "",
+      },
+      department: "",
+    });
   };
 
   const inputField = {
@@ -84,7 +126,6 @@ export const FormEmployees = () => {
     borderRadius: "5px",
   };
 
-  // composant de formulaire
   return (
     <>
       <h2>Create Employee</h2>
@@ -96,7 +137,11 @@ export const FormEmployees = () => {
           value={employeeData.firstName}
           onChange={handleChange}
           name="firstName"
+          required={true}
         />
+        {errors.firstName && (
+          <span className={s.errorMessage}>{errors.firstName}</span>
+        )}
 
         <label htmlFor="last-name">Last Name</label>
         <input
@@ -105,7 +150,11 @@ export const FormEmployees = () => {
           value={employeeData.lastName}
           onChange={handleChange}
           name="lastName"
+          required={true}
         />
+        {errors.lastName && (
+          <span className={s.errorMessage}>{errors.lastName}</span>
+        )}
 
         <label htmlFor="date-of-birth">Date of Birth</label>
         <DateTimePicker
@@ -126,7 +175,11 @@ export const FormEmployees = () => {
           showTime={false}
           name="startDate"
           style={inputField}
+          required={true}
         />
+        {errors.startDate && (
+          <span className={s.errorMessage}>{errors.startDate}</span>
+        )}
 
         <fieldset className={s.address}>
           <legend>Address</legend>
@@ -138,7 +191,11 @@ export const FormEmployees = () => {
             value={employeeData.address.street}
             onChange={handleChange}
             name="street"
+            required={true}
           />
+          {errors.street && (
+            <span className={s.errorMessage}>{errors.street}</span>
+          )}
 
           <label htmlFor="city">City</label>
           <input
@@ -147,7 +204,9 @@ export const FormEmployees = () => {
             value={employeeData.address.city}
             onChange={handleChange}
             name="city"
+            required={true}
           />
+          {errors.city && <span className={s.errorMessage}>{errors.city}</span>}
 
           <label htmlFor="state">State</label>
           <input
@@ -164,7 +223,9 @@ export const FormEmployees = () => {
             value={employeeData.address.zip}
             onChange={handleChange}
             name="zip"
+            required={true}
           />
+          {errors.zip && <span className={s.errorMessage}>{errors.zip}</span>}
         </fieldset>
 
         <label htmlFor="department">Department</label>
@@ -173,6 +234,7 @@ export const FormEmployees = () => {
           id="department"
           value={employeeData.department}
           onChange={handleChange}
+          required={true}
         >
           <option>Sales</option>
           <option>Marketing</option>
@@ -180,10 +242,25 @@ export const FormEmployees = () => {
           <option>Human Resources</option>
           <option>Legal</option>
         </select>
-        <button type="submit" className={s.btnSend}>
+        {errors.department && (
+          <span className={s.errorMessage}>{errors.department}</span>
+        )}
+        <button type="submit" className={s.btnSend} onClick={handleSubmit}>
           Save
         </button>
       </form>
+
+      {showConfirmation && (
+        <div className={s.popup}>
+          <div className={s.popupContent}>
+            <p>Employee added successfully.</p>
+            <button onClick={confirm}>Add More</button>
+            <button onClick={confirmAndNavigate}>
+              OK Redirect to employees page ?
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };

@@ -33,6 +33,7 @@
     color: white;
     padding: 15px;
     border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid white;
   }
   
   .titleForm {
@@ -67,6 +68,11 @@
   
   .tableData {
     color: #333;
+  }
+
+  .sort {
+    cursor: pointer;
+    margin-left: 5px;
   }
   
   @media screen and (max-width: 600px) {
