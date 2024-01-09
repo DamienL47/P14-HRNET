@@ -1,0 +1,105 @@
+.link {
+    display: block;
+    width: 10%;
+    margin: auto;
+    text-decoration: none;
+    color: black;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+}
+
+.link:hover {
+    background-color: black;
+    color: white;
+}
+
+.container {
+    padding: 20px;
+    max-width: 100%;
+    margin: auto;
+  }
+  
+  .containerForm {
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .containerFormTitle {
+    background: #000000;
+    color: white;
+    padding: 15px;
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .titleForm {
+    margin: 0;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .table thead {
+    background-color: #000000;
+    color: white;
+  }
+  
+  .table th, .table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .table th {
+    position: sticky;
+    top: 0;
+  }
+  
+  .table tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+  }
+  
+  .tableData {
+    color: #333;
+  }
+  
+  @media screen and (max-width: 600px) {
+    .table, .table thead, .table tbody, .table th, .table td, .table tr {
+      display: block;
+    }
+  
+    .table thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+  
+    .table tr {
+      margin-bottom: 10px;
+    }
+  
+    .table td {
+      border: none;
+      position: relative;
+      padding-left: 50%;
+      text-align: right;
+    }
+  
+    .table td:before {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      width: 45%;
+      padding-right: 10px;
+      white-space: nowrap;
+      content: attr(data-label);
+      text-align: left;
+      font-weight: bold;
+    }
+  }
