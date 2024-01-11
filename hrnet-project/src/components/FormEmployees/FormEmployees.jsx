@@ -5,6 +5,7 @@ import DateTimePicker from "react-dl-datetimepicker";
 import { FORMAT_DATE } from "react-dl-datetimepicker/dist/Constants";
 import s from "./style.module.css";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 export const FormEmployees = () => {
   const dispatch = useDispatch();
@@ -107,7 +108,7 @@ export const FormEmployees = () => {
       firstName: "",
       lastName: "",
       birthday: "",
-      startDate: "",
+      startDate: moment(),
       address: {
         street: "",
         city: "",
@@ -236,6 +237,7 @@ export const FormEmployees = () => {
           onChange={handleChange}
           required={true}
         >
+          <option value="">Select Department</option>
           <option>Sales</option>
           <option>Marketing</option>
           <option>Engineering</option>

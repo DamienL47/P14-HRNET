@@ -1,42 +1,62 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import s from "./style.module.css";
 
 export function ArrayEmployees() {
-  const listEmployees = localStorage.getItem("employeeData");
-  const [employeeData, setEmployeeData] = useState(
-    listEmployees ? JSON.parse(listEmployees) : []
-  );
-
+  const [employeeData, setEmployeeData] = useState([]);
+  const [sortedEmployees, setSortedEmployees] = useState([]);
+  const [displayedEmployees, setDisplayedEmployees] = useState([]);
   const [sortingField, setSortingField] = useState(null);
   const [sortingOrder, setSortingOrder] = useState("asc");
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const listEmployees = localStorage.getItem("employeeData");
+    const data = listEmployees ? JSON.parse(listEmployees) : [];
+    setEmployeeData(data);
+    setSortedEmployees(data);
+    setDisplayedEmployees(data);
+  }, []);
+
+  useEffect(() => {
+    const filteredData = selectedDepartment
+      ? sortedEmployees.filter(
+          (employee) => employee.department === selectedDepartment
+        )
+      : sortedEmployees;
+    setDisplayedEmployees(filteredData);
+  }, [selectedDepartment, sortedEmployees]);
 
   const handleSorting = (field) => {
-    if (field === sortingField) {
-      setSortingOrder(sortingOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortingField(field);
-      setSortingOrder("asc");
-    }
+    const order =
+      field === sortingField && sortingOrder === "asc" ? "desc" : "asc";
+    setSortingField(field);
+    setSortingOrder(order);
 
-    const sortedEmployees = [...employeeData].sort((a, b) => {
+    const sortedData = [...employeeData].sort((a, b) => {
       if (field === "birthday" || field === "startDate") {
         const dateA = a[field] ? new Date(a[field].date) : new Date(0);
         const dateB = b[field] ? new Date(b[field].date) : new Date(0);
-        return sortingOrder === "asc" ? dateA - dateB : dateB - dateA;
-      }
-      // Pour les champs de type string
-      else {
+        return order === "asc" ? dateA - dateB : dateB - dateA;
+      } else {
         const valueA = a[field] || "";
         const valueB = b[field] || "";
-        return sortingOrder === "asc"
+        return order === "asc"
           ? valueA.localeCompare(valueB)
           : valueB.localeCompare(valueA);
       }
     });
-    setEmployeeData(sortedEmployees);
+    setSortedEmployees(sortedData);
+    setDisplayedEmployees(sortedData);
   };
 
+  const handleFilterChange = (e) => {
+    setSelectedDepartment(e.target.value);
+  };
+
+  const togglePopup = () => {
+    setShowPopup(!showPopup);
+  };
   return (
     <>
       <a href="/" className={s.link}>
@@ -104,30 +124,53 @@ export function ArrayEmployees() {
                     </span>
                   </th>
                   <th className={s.tableHeader}>Address</th>
-                  <th className={s.tableHeader}>
-                    Department
-                    <span
-                      className={s.sort}
-                      onClick={() => handleSorting("department")}
-                    >
-                      {sortingField === "department"
-                        ? sortingOrder === "asc"
-                          ? "v"
-                          : "^"
-                        : "^"}
-                    </span>
+                  <th className={(s.tableHeader, s.blockDepartment)}>
+                    <label htmlFor="department">
+                      Department{" "}
+                      <span
+                        id="departmentPopup"
+                        className={s.sort}
+                        onClick={togglePopup}
+                      >
+                        {showPopup ? "v" : "^"}
+                      </span>
+                    </label>
+
+                    {showPopup && (
+                      <select
+                        name="department"
+                        id="department"
+                        className={s.select}
+                        value={selectedDepartment}
+                        onChange={handleFilterChange}
+                      >
+                        <option value="">Select Department</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Human Resources">Human Resources</option>
+                        <option value="Legal">Legal</option>
+                      </select>
+                    )}
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {employeeData.map((employee, index) => (
+                {displayedEmployees.map((employee, index) => (
                   <tr key={index}>
                     <td className={s.tableData}>{employee.firstName}</td>
                     <td className={s.tableData}>{employee.lastName}</td>
-                    <td className={s.tableData}>{employee.birthday.date}</td>
-                    <td className={s.tableData}>{employee.startDate.date}</td>
                     <td className={s.tableData}>
-                      {`${employee.address.street}, ${employee.address.city}, ${employee.address.state}, ${employee.address.zip}`}
+                      {employee.birthday &&
+                        employee.birthday.date.split("T")[0]}
+                    </td>
+                    <td className={s.tableData}>
+                      {employee.startDate &&
+                        employee.startDate.date.split("T")[0]}
+                    </td>
+                    <td className={s.tableData}>
+                      {employee.address &&
+                        `${employee.address.street}, ${employee.address.city}, ${employee.address.state}, ${employee.address.zip}`}
                     </td>
                     <td className={s.tableData}>{employee.department}</td>
                   </tr>
