@@ -57,6 +57,22 @@ export function ArrayEmployees() {
   const togglePopup = () => {
     setShowPopup(!showPopup);
   };
+
+  const deleteEmployee = (employeeIndex) => {
+    // Filtrer pour obtenir tous les employés sauf celui à l'index spécifié
+    const updatedEmployees = employeeData.filter(
+      (_, index) => index !== employeeIndex
+    );
+
+    // Mettre à jour les états avec la nouvelle liste d'employés
+    setEmployeeData(updatedEmployees);
+    setSortedEmployees(updatedEmployees);
+    setDisplayedEmployees(updatedEmployees);
+
+    // Mise à jour du localStorage avec la nouvelle liste
+    localStorage.setItem("employeeData", JSON.stringify(updatedEmployees));
+  };
+
   return (
     <>
       <a href="/" className={s.link}>
@@ -153,6 +169,7 @@ export function ArrayEmployees() {
                       </select>
                     )}
                   </th>
+                  <th className={s.tableHeader}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -173,6 +190,11 @@ export function ArrayEmployees() {
                         `${employee.address.street}, ${employee.address.city}, ${employee.address.state}, ${employee.address.zip}`}
                     </td>
                     <td className={s.tableData}>{employee.department}</td>
+                    <td className={s.tableData}>
+                      <button onClick={() => deleteEmployee(index)}>
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

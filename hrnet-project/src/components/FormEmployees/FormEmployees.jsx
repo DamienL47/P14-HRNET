@@ -85,13 +85,32 @@ export const FormEmployees = () => {
     e.preventDefault();
     const newErrors = validateFields();
     if (Object.keys(newErrors).length === 0) {
-      dispatch(updateAllFields(employeeData));
-
       const existingEmployees =
         JSON.parse(localStorage.getItem("employeeData")) || [];
+
+      const employeeExists = existingEmployees.some((employee) => {
+        return (
+          employee.firstName === employeeData.firstName &&
+          employee.lastName === employeeData.lastName &&
+          moment(employee.birthday).format("YYYY-MM-DD") ===
+            moment(employeeData.birthday).format("YYYY-MM-DD") &&
+          moment(employee.startDate).format("YYYY-MM-DD") ===
+            moment(employeeData.startDate).format("YYYY-MM-DD") &&
+          employee.address.street === employeeData.address.street &&
+          employee.address.city === employeeData.address.city &&
+          employee.address.state === employeeData.address.state &&
+          employee.address.zip === employeeData.address.zip
+        );
+      });
+
+      if (employeeExists) {
+        alert("Employee already exists");
+        return;
+      }
+
+      dispatch(updateAllFields(employeeData));
       existingEmployees.push(employeeData);
       localStorage.setItem("employeeData", JSON.stringify(existingEmployees));
-
       setShowConfirmation(true);
     } else {
       setErrors(newErrors);
@@ -108,7 +127,7 @@ export const FormEmployees = () => {
       firstName: "",
       lastName: "",
       birthday: "",
-      startDate: moment(),
+      startDate: "",
       address: {
         street: "",
         city: "",
@@ -130,7 +149,7 @@ export const FormEmployees = () => {
   return (
     <>
       <h2>Create Employee</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} id="formEmployee">
         <label htmlFor="first-name">First Name</label>
         <input
           type="text"
