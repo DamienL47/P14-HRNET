@@ -59,17 +59,14 @@ export function ArrayEmployees() {
   };
 
   const deleteEmployee = (employeeIndex) => {
-    // Filtrer pour obtenir tous les employés sauf celui à l'index spécifié
     const updatedEmployees = employeeData.filter(
       (_, index) => index !== employeeIndex
     );
 
-    // Mettre à jour les états avec la nouvelle liste d'employés
     setEmployeeData(updatedEmployees);
     setSortedEmployees(updatedEmployees);
     setDisplayedEmployees(updatedEmployees);
 
-    // Mise à jour du localStorage avec la nouvelle liste
     localStorage.setItem("employeeData", JSON.stringify(updatedEmployees));
   };
 
@@ -191,7 +188,11 @@ export function ArrayEmployees() {
                     </td>
                     <td className={s.tableData}>{employee.department}</td>
                     <td className={s.tableData}>
-                      <button onClick={() => deleteEmployee(index)}>
+                      <button
+                        type="delete"
+                        onClick={() => deleteEmployee(index)}
+                        className={s.deleteBtn}
+                      >
                         Delete
                       </button>
                     </td>
