@@ -184,7 +184,7 @@ export function ArrayEmployees() {
                     </td>
                     <td className={s.tableData}>
                       {employee.address &&
-                        `${employee.address.street}, ${employee.address.city}, ${employee.address.state}, ${employee.address.zip}`}
+                        `${employee.address.street} ${employee.address.city} ${employee.address.state} ${employee.address.zip}`}
                     </td>
                     <td className={s.tableData}>{employee.department}</td>
                     <td className={s.tableData}>

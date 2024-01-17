@@ -5,7 +5,6 @@ import DateTimePicker from "react-dl-datetimepicker";
 import { FORMAT_DATE } from "react-dl-datetimepicker/dist/Constants";
 import s from "./style.module.css";
 import { useNavigate } from "react-router-dom";
-import moment from "moment";
 
 export const FormEmployees = () => {
   const dispatch = useDispatch();
@@ -92,10 +91,6 @@ export const FormEmployees = () => {
         return (
           employee.firstName === employeeData.firstName &&
           employee.lastName === employeeData.lastName &&
-          moment(employee.birthday).format("YYYY-MM-DD") ===
-            moment(employeeData.birthday).format("YYYY-MM-DD") &&
-          moment(employee.startDate).format("YYYY-MM-DD") ===
-            moment(employeeData.startDate).format("YYYY-MM-DD") &&
           employee.address.street === employeeData.address.street &&
           employee.address.city === employeeData.address.city &&
           employee.address.state === employeeData.address.state &&
